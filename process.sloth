@@ -1,0 +1,15 @@
+#!/usr/bin/env sloth
+
+# This script will grep all *.gcode files in the current dir for the amount
+# of grams total filament used.
+
+# Shell out for the glob
+let result = "sh -c 'ls *.gcode'"&!
+let files = result.stdout.split("\n")
+for file in files {
+  if file == "" {
+    continue
+  }
+  let result = ["cat", file] | "grep 'total filament used'"&!
+  print("${file}: ${result.stdout.trim()}")
+}

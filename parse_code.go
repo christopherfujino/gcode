@@ -5,12 +5,7 @@ import (
 	"math"
 )
 
-func ParseGCode(line string) Instruction {
-	var runes = []rune(line)
-	if runes[0] != 'G' {
-		panic(0)
-	}
-	runes = runes[1:]
+func parseCode(runes []rune) (float64, error) {
 	var postDot = false
 	var preDotDigits []float64
 	var postDotDigits []float64
@@ -31,7 +26,7 @@ func ParseGCode(line string) Instruction {
 	}
 
 	if len(preDotDigits) == 0 {
-		panic(fmt.Sprintf("Parsing G with no numbers: %v, %v, %s", preDotDigits, postDotDigits, line))
+		return 0, fmt.Errorf("Parsing G with no numbers: %v, %v", preDotDigits, postDotDigits)
 	}
 
 	var code float64
@@ -56,7 +51,37 @@ func ParseGCode(line string) Instruction {
 		code += digit * math.Pow10(zeroes)
 	}
 
-	fmt.Printf("%s -> G%f\n", line, code)
+	return code, nil
+}
+
+func ParseMCode(line string) Instruction {
+	var runes = []rune(line)
+	if runes[0] != 'M' {
+		panic(0)
+	}
+
+	code, err := parseCode(runes[1:])
+	if err != nil {
+		panic(err)
+	}
+
+	return Instruction{
+		Type:      'm',
+		Code:      code,
+		DebugLine: line,
+	}
+}
+
+func ParseGCode(line string) Instruction {
+	var runes = []rune(line)
+	if runes[0] != 'G' {
+		panic(0)
+	}
+
+	code, err := parseCode(runes[1:])
+	if err != nil {
+		panic(err)
+	}
 
 	return Instruction{
 		Type:      'g',

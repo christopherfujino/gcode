@@ -18,7 +18,7 @@ type Program struct {
 	Instructions []Instruction
 }
 
-func ParseLine(line string) (isNull bool, i Instruction) {
+func ParseLine(lineNum int, line string) (isNull bool, i Instruction) {
 	if len(line) == 0 {
 		isNull = true
 		return
@@ -28,8 +28,7 @@ func ParseLine(line string) (isNull bool, i Instruction) {
 	case 'G':
 		return false, ParseGCode(line)
 	case 'M':
-		// TODO: implement M
-		return true, Instruction{}
+		return false, ParseMCode(line)
 	case ';':
 		return true, Instruction{}
 	default:
@@ -38,8 +37,8 @@ func ParseLine(line string) (isNull bool, i Instruction) {
 }
 
 func (p *Program) Parse(lines []string) {
-	for _, line := range lines {
-		isNull, i := ParseLine(line)
+	for i, line := range lines {
+		isNull, i := ParseLine(i + 1, line)
 		if !isNull {
 			p.Instructions = append(p.Instructions, i)
 		}

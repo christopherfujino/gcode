@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SESSION='__gcode_go__'
-BUILD_CMD='go run .'
+BUILD_CMD='go run . ./heart_0.15mm_PLA_MK3S_2h19m.gcode'
 
 cd "$(dirname $(realpath ${BASH_SOURCE[0]} ) )"
 
